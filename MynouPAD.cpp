@@ -1,28 +1,20 @@
 /**
  * ======================================================================================
- * MYNOUPAD S3 OPERATING SYSTEM - EDI ANALYST PROFESSIONAL MASTER BUILD
+ * MYNOUPAD S3
  * ======================================================================================
- * Firmware Version   : 6.0 (Zero-Byte Fallback & Matrix Integrity)
- * Build Status       : Absolute Integrity Mode (High Availability)
- * * * --- INFRASTRUCTURE DOCUMENTATION ---
  * Hardware: ESP32-S3 Dual Core @ 240MHz
- * Flash: 16MB (Dedicated 9.9MB FFat partition for DuckyScripts)
- * USB: TinyUSB Stack (HID + CDC) for simultaneous keyboard and media emulation.
- * Display: SSD1306 OLED (128x64) via I2C bus.
- * * * --- COMPILATION REQUIREMENTS (ARDUINO IDE) ---
- * 1. USB CDC On Boot: Enabled
- * 2. USB Mode: TinyUSB
- * 3. Partition Scheme: 16M Flash (3MB APP / 9.9MB FATFS)
- * * * --- CORRECTIONS IN THIS VERSION ---
- * 1. Macro Fallback: If the file exists but has 0 bytes, sends the default key.
- * 2. Matrix Row Swap: {7, 6, 5} to fix physical inversion (2 triggering 8).
- * 3. Numpad Logic: 7-8-9, 4-5-6, 1-2-3 mapping restored.
+ * Flash: 16MB (9.9MB FFat partition for DuckyScripts)
+ * USB: TinyUSB Stack (HID + CDC) for simultaneous keyboard and media emulation
+ * Display: SSD1306 OLED (128x64) via I2C bus
+ * 
+ * Compilation Requirements:
+ * - USB CDC On Boot: Enabled
+ * - USB Mode: TinyUSB
+ * - Partition Scheme: 16M Flash (3MB APP / 9.9MB FATFS)
  * ======================================================================================
  */
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 1: SYSTEM LIBRARIES AND DEPENDENCIES ---
-// --------------------------------------------------------------------------------------
+// System libraries and dependencies
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -40,9 +32,7 @@
 #include <HTTPClient.h>
 #include "secrets.h"
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 2: HARDWARE DEFINITIONS AND PIN MAPPING (S3) ---
-// --------------------------------------------------------------------------------------
+// Hardware definitions and pin mapping
 
 #define PIN_ENC_CLK  1
 #define PIN_ENC_DT   2
@@ -60,9 +50,7 @@
 #define PIN_BUZZER 10
 #define PIN_MOTOR 18
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 3: GLOBAL VARIABLES AND OBJECT INSTANCES ---
-// --------------------------------------------------------------------------------------
+// Global variables and object instances
 
 Adafruit_NeoPixel pixels(1, PIN_NEO_RGB, NEO_GRB + NEO_KHZ800);
 USBHIDConsumerControl ConsumerControl;
@@ -133,9 +121,7 @@ unsigned long timer_knobPress = 0;         // Moment of the click
 bool isKnobBeingLongPressed = false;       // Prevents multiple triggers
 const int KNOB_LONG_PRESS_MS = 600;        // Long press duration (600ms)
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 4: ADMINISTRATIVE DASHBOARD (COMPLETE INDUSTRIAL CSS) ---
-// --------------------------------------------------------------------------------------
+// Administrative dashboard (HTML/CSS)
 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
@@ -207,9 +193,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 </html>
 )rawliteral";
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 5: WEB SERVER TEMPLATE PROCESSING ---
-// --------------------------------------------------------------------------------------
+// Web server template processing
 
 String processor(const String& var) {
     if (var == "MACROLIST") {
@@ -233,9 +217,7 @@ String processor(const String& var) {
     return String();
 }
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 6: DUCKYSCRIPT ENGINE ---
-// --------------------------------------------------------------------------------------
+// DuckyScript engine
 
 void processarLinhaDucky(String linha) {
     linha.trim();
@@ -299,9 +281,7 @@ bool executarArquivoDucky(String fileName) {
     return true;
 }
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 7: OLED GRAPHIC INTERFACE (STARTUP & TELEMETRY) ---
-// --------------------------------------------------------------------------------------
+// OLED graphic interface (startup and telemetry)
 
 void drawFace(bool isBlinking) {
     display.clearDisplay();
@@ -505,9 +485,7 @@ void drawMenu() {
     display.display();
 }
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 8: INITIAL CONFIGURATION (SETUP) ---
-// --------------------------------------------------------------------------------------
+// Setup configuration
 
 // --- HAPTIC FEEDBACK MANAGER (NON-BLOCKING) ---
 void triggerHaptic(int pattern) {
@@ -606,9 +584,7 @@ void setup() {
     bootTimerTimestamp = millis();
 }
 
-// --------------------------------------------------------------------------------------
-// --- SECTION 9: MAIN OPERATION LOOP ---
-// --------------------------------------------------------------------------------------
+// Main operation loop
 
 bool readKnobStable() {
     int count = 0;
