@@ -1,0 +1,14 @@
+# Secrets file (contains Wi-Fi password and HA token)
+secrets.h
+
+# Arduino IDE temporary build files and directories
+build/
+bin/
+*.local.txt
+
+# PlatformIO build directories and files
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
