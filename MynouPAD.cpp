@@ -1,27 +1,27 @@
 /**
  * ======================================================================================
- * SISTEMA OPERACIONAL MYNOUPAD S3 - EDI ANALYST PROFESSIONAL MASTER BUILD
+ * MYNOUPAD S3 OPERATING SYSTEM - EDI ANALYST PROFESSIONAL MASTER BUILD
  * ======================================================================================
- * Versão do Firmware : 6.0 (Zero-Byte Fallback & Matrix Integrity)
- * Status da Build    : Absolute Integrity Mode (High Availability)
- * * * --- DOCUMENTAÇÃO DE INFRAESTRUTURA ---
+ * Firmware Version   : 6.0 (Zero-Byte Fallback & Matrix Integrity)
+ * Build Status       : Absolute Integrity Mode (High Availability)
+ * * * --- INFRASTRUCTURE DOCUMENTATION ---
  * Hardware: ESP32-S3 Dual Core @ 240MHz
- * Flash: 16MB (Partição 9.9MB FFat dedicada para DuckyScripts)
- * USB: Pilha TinyUSB (HID + CDC) para emulação de teclado e mídia simultânea.
- * Display: SSD1306 OLED (128x64) via barramento I2C.
- * * * --- REQUISITOS DE COMPILAÇÃO (ARDUINO IDE) ---
+ * Flash: 16MB (Dedicated 9.9MB FFat partition for DuckyScripts)
+ * USB: TinyUSB Stack (HID + CDC) for simultaneous keyboard and media emulation.
+ * Display: SSD1306 OLED (128x64) via I2C bus.
+ * * * --- COMPILATION REQUIREMENTS (ARDUINO IDE) ---
  * 1. USB CDC On Boot: Enabled
  * 2. USB Mode: TinyUSB
  * 3. Partition Scheme: 16M Flash (3MB APP / 9.9MB FATFS)
- * * * --- CORREÇÕES DESTA VERSÃO ---
- * 1. Fallback de Macros: Se o arquivo existir mas tiver 0 bytes, envia a tecla padrão.
- * 2. Matrix Row Swap: {7, 6, 5} para corrigir inversão física (2 disparando 8).
- * 3. Numpad Logic: Mapeamento 7-8-9, 4-5-6, 1-2-3 restaurado.
+ * * * --- CORRECTIONS IN THIS VERSION ---
+ * 1. Macro Fallback: If the file exists but has 0 bytes, sends the default key.
+ * 2. Matrix Row Swap: {7, 6, 5} to fix physical inversion (2 triggering 8).
+ * 3. Numpad Logic: 7-8-9, 4-5-6, 1-2-3 mapping restored.
  * ======================================================================================
  */
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 1: INCLUSÃO DE BIBLIOTECAS E DEPENDÊNCIAS DO SISTEMA ---
+// --- SECTION 1: SYSTEM LIBRARIES AND DEPENDENCIES ---
 // --------------------------------------------------------------------------------------
 
 #include <Arduino.h>
@@ -41,7 +41,7 @@
 #include "secrets.h"
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 2: DEFINIÇÕES DE HARDWARE E MAPEAMENTO DE PINAGEM (S3) ---
+// --- SECTION 2: HARDWARE DEFINITIONS AND PIN MAPPING (S3) ---
 // --------------------------------------------------------------------------------------
 
 #define PIN_ENC_CLK  1
@@ -61,7 +61,7 @@
 #define PIN_MOTOR 18
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 3: VARIÁVEIS GLOBAIS E INSTÂNCIAS DE OBJETOS ---
+// --- SECTION 3: GLOBAL VARIABLES AND OBJECT INSTANCES ---
 // --------------------------------------------------------------------------------------
 
 Adafruit_NeoPixel pixels(1, PIN_NEO_RGB, NEO_GRB + NEO_KHZ800);
@@ -88,7 +88,7 @@ String traceMacroFile   = "System Idle";
 String traceMacroResult = "Ready";
 unsigned long traceTimer = 0;
 
-// Correção física das linhas para o layout 7-8-9 (Topo) e 1-2-3 (Base)
+// Physical row correction for 7-8-9 (Top) and 1-2-3 (Base) layout
 const int pins_matrix_rows[3] = {7, 6, 5};
 const int pins_matrix_cols[3] = {15, 16, 17};
 
@@ -121,20 +121,20 @@ const unsigned long RETRY_DELAY_HID  = 20000;
 unsigned long bootTimerTimestamp     = 0;
 unsigned long lastRetryTimestamp     = 0;
 
-// --- VARIÁVEIS DO MENU OLED E LONG PRESS ---
+// --- OLED MENU AND LONG PRESS VARIABLES ---
 bool isMenuMode = false;
 int menuSelectedIndex = 0;
 int menuScrollOffset = 0;
-String menuItems[18]; // Capacidade para 18 arquivos (9 macros + 9 combos)
+String menuItems[18]; // Capacity for 18 files (9 macros + 9 combos)
 int menuCount = 0;
 unsigned long menuTimeoutTimer = 0;
-bool ignoreNextKnobRelease = false; // Evita disparar ação ao soltar o atalho
-unsigned long timer_knobPress = 0;         // NOVO: Armazena o momento do clique
-bool isKnobBeingLongPressed = false;       // NOVO: Evita múltiplos acionamentos
-const int KNOB_LONG_PRESS_MS = 600;        // NOVO: Tempo do clique longo (600ms)
+bool ignoreNextKnobRelease = false; // Prevents triggering action on knob release
+unsigned long timer_knobPress = 0;         // Moment of the click
+bool isKnobBeingLongPressed = false;       // Prevents multiple triggers
+const int KNOB_LONG_PRESS_MS = 600;        // Long press duration (600ms)
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 4: DASHBOARD ADMINISTRATIVA (CSS INDUSTRIAL COMPLETO) ---
+// --- SECTION 4: ADMINISTRATIVE DASHBOARD (COMPLETE INDUSTRIAL CSS) ---
 // --------------------------------------------------------------------------------------
 
 const char index_html[] PROGMEM = R"rawliteral(
@@ -208,7 +208,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 )rawliteral";
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 5: PROCESSAMENTO DE TEMPLATES DO SERVIDOR WEB ---
+// --- SECTION 5: WEB SERVER TEMPLATE PROCESSING ---
 // --------------------------------------------------------------------------------------
 
 String processor(const String& var) {
@@ -220,7 +220,7 @@ String processor(const String& var) {
         while (fileEntry) {
             String fName = String(fileEntry.name());
             
-            // Nova Regra: Só adiciona na lista se o tamanho for maior que 0
+            // New Rule: Only add to the list if size is greater than 0
             if ((fName.indexOf("macro_") != -1 || fName.indexOf("combo_") != -1) && fileEntry.size() > 0) {
                 bool isC = fName.indexOf("combo_") != -1;
                 htmlPayload += "<div class='file-item'><span class='" + String(isC ? "name-combo" : "name-macro") + "'>" + fName + "</span>";
@@ -234,7 +234,7 @@ String processor(const String& var) {
 }
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 6: MOTOR DUCKYSCRIPT ---
+// --- SECTION 6: DUCKYSCRIPT ENGINE ---
 // --------------------------------------------------------------------------------------
 
 void processarLinhaDucky(String linha) {
@@ -249,7 +249,7 @@ void processarLinhaDucky(String linha) {
             HTTPClient http;
             http.begin("http://192.168.3.3:8123/api/services/homeassistant/toggle"); 
             
-            // Lembre-se de inserir o seu novo token caso já tenha revogado o anterior
+            // Remember to insert your new token if you have revoked the previous one
             http.addHeader("Authorization", SECRET_HA_TOKEN);
             http.addHeader("Content-Type", "application/json");
             
@@ -278,12 +278,12 @@ void processarLinhaDucky(String linha) {
     }
 }
 
-// A função agora é booleana e integra a verificação de tamanho
+// The function is now boolean and integrates size validation
 bool executarArquivoDucky(String fileName) {
     String fullPath = fileName.startsWith("/") ? fileName : "/" + fileName;
     File scriptFile = FFat.open(fullPath, "r");
     
-    // Abre apenas uma vez e garante que há conteúdo
+    // Opens only once and ensures there is content
     if (!scriptFile || scriptFile.size() == 0) {
         if (scriptFile) scriptFile.close();
         traceMacroResult = "NOT FOUND/EMPTY"; traceMacroFile = fullPath; traceTimer = millis();
@@ -300,7 +300,7 @@ bool executarArquivoDucky(String fileName) {
 }
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 7: INTERFACE GRÁFICA OLED (STARTUP E TELEMETRIA) ---
+// --- SECTION 7: OLED GRAPHIC INTERFACE (STARTUP & TELEMETRY) ---
 // --------------------------------------------------------------------------------------
 
 void drawFace(bool isBlinking) {
@@ -332,35 +332,35 @@ void drawHeader() {
     display.setCursor(0, 3); 
     display.print("MynouPAD");
 
-    // Status do Wi-Fi (Ícone Lateral - Apenas 1 Quadrante)
+    // Wi-Fi Status (Side Icon - 1 Quadrant only)
     if (wifiConnected) { 
-        int x = 120; // Ponto de origem horizontal
-        int y = 9; // Ponto de origem vertical (base)
+        int x = 120; // Horizontal origin
+        int y = 9; // Vertical origin (base)
         
-        // Desenha apenas o quadrante 1 (Top-Right) para o visual de "leque"
+        // Draw only quadrant 1 (Top-Right) for the "fan" look
         display.drawCircleHelper(x, y, 4, 1, SSD1306_WHITE); 
         display.drawCircleHelper(x, y, 7, 1, SSD1306_WHITE);  
         display.drawPixel(x, y, SSD1306_WHITE);            
     }
 
-    // Linha de Scanner Animada e Divisória
+    // Animated Scanner Line and Divider
     display.drawFastHLine((frameCounter * 3) % 128, 13, 15, SSD1306_WHITE);
     display.drawFastHLine(0, 15, 128, SSD1306_WHITE);
 }
 
-// --- FUNÇÃO DE TRADUÇÃO DE NOMES ---
+// --- NAME TRANSLATION FUNCTION ---
 String traduzirNome(String fileName) {
-    // Limpa o nome do arquivo para facilitar a comparação
+    // Cleans the file name to make comparison easier
     fileName.replace(".txt", "");
     if (fileName.startsWith("/")) fileName = fileName.substring(1);
 
-    // Dicionário de Nomes (Adicione os seus aqui)
+    // Name Dictionary (Add yours here)
     if (fileName == "combo_8") return "AC Escritorio";
     if (fileName == "combo_1") return "Toggle Python";
     if (fileName == "combo_9") return "Toggle Monitor";
-    // ... continue adicionando conforme precisar ...
+    // ... continue adding as needed ...
 
-    // Fallback: se não houver tradução, mostra o nome original limpo
+    // Fallback: if no translation, show clean original name
     return fileName;
 }
 
@@ -368,14 +368,14 @@ void atualizaDisplay() {
     display.clearDisplay(); 
     drawHeader();
     
-    // A trava traceTimer > 0 impede telas falsas durante o boot da placa
+    // The traceTimer > 0 lock prevents false screens during board boot
     if (traceTimer > 0 && millis() - traceTimer < 3000) {
         
-        // Verifica se a macro não foi encontrada ou está com 0 bytes
+        // Checks if macro was not found or is 0 bytes
         if (traceMacroResult == "NOT FOUND/EMPTY") {
             char keyDigit = ' ';
             
-            // Varre o nome do arquivo para encontrar o número correspondente
+            // Scan file name to find the corresponding number
             for (int i = 0; i < traceMacroFile.length(); i++) {
                 if (isDigit(traceMacroFile[i])) {
                     keyDigit = traceMacroFile[i];
@@ -383,26 +383,26 @@ void atualizaDisplay() {
                 }
             }
             
-            // Desenha o número em tamanho grande na área inferior (azul) do OLED
+            // Draw the number in large size on the lower (blue) area of the OLED
             display.setTextSize(5);
             display.setTextColor(SSD1306_WHITE);
-            display.setCursor(51, 24); // Coordenadas para centralizar o dígito
+            display.setCursor(51, 24); // Coordinates to center the digit
             display.print(keyDigit);
             
         } else {
-            // Busca o nome bonito no dicionário para macros existentes
+            // Find the friendly name in the dictionary for existing macros
             String friendlyName = traduzirNome(traceMacroFile);
             
             display.setCursor(0, 24); 
             display.print("Acao disparada:");
             
-            // Cria uma barra sólida branca para dar destaque
+            // Create a solid white bar for emphasis
             display.fillRect(0, 35, 128, 15, SSD1306_WHITE);
             display.setTextColor(SSD1306_BLACK); 
             display.setCursor(4, 39); 
             display.print(friendlyName);
             
-            // Imprime o status na base da tela
+            // Print status at the bottom of the screen
             display.setTextColor(SSD1306_WHITE); 
             display.setCursor(0, 54); 
             display.print("Status: ");
@@ -420,10 +420,10 @@ void atualizaDisplay() {
         }
     } 
     else {
-        // Separa a lógica do Mute da lógica do Volume
+        // Separate Mute logic from Volume logic
         if (isMuteActive) { 
             display.setTextSize(2); 
-            display.setCursor(40, 32); // Eixo X travado no centro exato da tela
+            display.setCursor(40, 32); // X axis locked in the exact center of the screen
             display.print("MUTE"); 
         }
         else { 
@@ -452,7 +452,7 @@ void populateMenu() {
     File fileEntry = rootDir.openNextFile();
     while (fileEntry && menuCount < 18) {
         
-        // Nova Regra: Ignora arquivos com 0 bytes na construção do menu OLED
+        // New Rule: Ignores 0-byte files in OLED menu construction
         if (fileEntry.size() > 0) { 
             String fName = String(fileEntry.name());
             if (fName.indexOf("macro_") != -1 || fName.indexOf("combo_") != -1) {
@@ -463,7 +463,7 @@ void populateMenu() {
     }
 }
 
-// --- MENU ATUALIZADO (MAIOR LEGIBILIDADE) ---
+// --- UPDATED MENU (GREATER LEGIBILITY) ---
 void drawMenu() {
     display.clearDisplay();
     display.setTextSize(1);
@@ -478,16 +478,16 @@ void drawMenu() {
         return;
     }
 
-    // Reduzido para 4 itens para dar mais respiro entre as linhas
+    // Reduced to 4 items to give more breathing room between lines
     int visibleItems = 4; 
     for (int i = 0; i < visibleItems; i++) {
         int itemIndex = menuScrollOffset + i;
         if (itemIndex >= menuCount) break;
 
-        // Aumenta o espaçamento base e o salto entre linhas (de 10 para 13)
+        // Increase base spacing and line jump (from 10 to 13)
         int yPos = 14 + (i * 13); 
         
-        // Caixa de seleção mais alta e confortável
+        // Higher and more comfortable selection box
         if (itemIndex == menuSelectedIndex) {
             display.fillRect(0, yPos - 1, 128, 13, SSD1306_WHITE);
             display.setTextColor(SSD1306_BLACK);
@@ -495,10 +495,10 @@ void drawMenu() {
             display.setTextColor(SSD1306_WHITE);
         }
         
-        // Centraliza o texto verticalmente dentro da nova linha
+        // Center text vertically inside the new line
         display.setCursor(2, yPos + 2); 
         
-        // Aplica a tradução antes de exibir
+        // Apply translation before rendering
         String displayName = traduzirNome(menuItems[itemIndex]);
         display.print(displayName);
     }
@@ -506,32 +506,32 @@ void drawMenu() {
 }
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 8: CONFIGURAÇÃO INICIAL (SETUP) ---
+// --- SECTION 8: INITIAL CONFIGURATION (SETUP) ---
 // --------------------------------------------------------------------------------------
 
-// --- GERENCIADOR DE FEEDBACK TÁTIL (NON-BLOCKING) ---
+// --- HAPTIC FEEDBACK MANAGER (NON-BLOCKING) ---
 void triggerHaptic(int pattern) {
-    if (pattern == 1) { // 1. Click Normal (Curto)
+    if (pattern == 1) { // 1. Normal Click (Short)
         digitalWrite(PIN_MOTOR, HIGH);
         timer_vibration = millis() + 85;
         state_vibration = 1; 
     }
-    else if (pattern == 2) { // 2. Mute (Longo)
+    else if (pattern == 2) { // 2. Mute (Long)
         digitalWrite(PIN_MOTOR, HIGH);
         timer_vibration = millis() + 150;
         state_vibration = 1;
     }
-    else if (pattern == 3) { // 3. Combo Macro (Duplo Rápido)
+    else if (pattern == 3) { // 3. Combo Macro (Double Fast)
         digitalWrite(PIN_MOTOR, HIGH);
         timer_vibration = millis() + 85;
-        state_vibration = 2; // Manda pro estado 2 (Pausa)
+        state_vibration = 2; // Send to state 2 (Pause)
     }
-    else if (pattern == 4) { // 4. Fallback / Arquivo Vazio (Longo e Pesado)
+    else if (pattern == 4) { // 4. Fallback / Empty File (Long and Heavy)
         digitalWrite(PIN_MOTOR, HIGH);
         timer_vibration = millis() + 300; 
         state_vibration = 1;
     }
-    else if (pattern == 5) { // 5. Giro do Knob (Extra curto e seco)
+    else if (pattern == 5) { // 5. Knob Turn (Extra short and dry)
         digitalWrite(PIN_MOTOR, HIGH);
         timer_vibration = millis() + 25; 
         state_vibration = 1;
@@ -550,15 +550,16 @@ void setup() {
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_MOTOR, OUTPUT);
     digitalWrite(PIN_MOTOR, LOW); 
-// Garante que o motor comece desligado
-// Som de inicialização: Duplo Bipe Tecnológico
-tone(PIN_BUZZER, 988); // Si (B5)
-delay(80);
-noTone(PIN_BUZZER); // Pausa rápida para separar as notas
-delay(40);
-tone(PIN_BUZZER, 1319); // Mi agudo (E6)
-delay(150);
-noTone(PIN_BUZZER);
+    // Ensure the motor starts off
+
+    // Startup sound: Tech Double Beep
+    tone(PIN_BUZZER, 988); // B5
+    delay(80);
+    noTone(PIN_BUZZER); // Quick pause to separate notes
+    delay(40);
+    tone(PIN_BUZZER, 1319); // High E (E6)
+    delay(150);
+    noTone(PIN_BUZZER);
 
     WiFi.begin(wifi_ssid, wifi_password);
     unsigned long sW = millis();
@@ -582,12 +583,12 @@ noTone(PIN_BUZZER);
             scriptContent.trim(); 
 
             if (scriptContent.length() == 0) {
-                // Se o texto estiver vazio, deleta o arquivo da memória flash
+                // If text is empty, delete the file from flash memory
                 if (FFat.exists(p)) {
                     FFat.remove(p);
                 }
             } else {
-                // Caso contrário, salva o arquivo com o conteúdo
+                // Otherwise, save the file with the content
                 File f = FFat.open(p, "w"); 
                 if(f){ 
                     f.print(scriptContent); 
@@ -606,7 +607,7 @@ noTone(PIN_BUZZER);
 }
 
 // --------------------------------------------------------------------------------------
-// --- SEÇÃO 9: LOOP DE OPERAÇÃO PRINCIPAL ---
+// --- SECTION 9: MAIN OPERATION LOOP ---
 // --------------------------------------------------------------------------------------
 
 bool readKnobStable() {
@@ -627,7 +628,7 @@ void loop() {
 
     bool knob = readKnobStable();
 
-    // --- DETECÇÃO DE LONG PRESS (KNOB) ---
+    // --- KNOB LONG PRESS DETECTION ---
     if (knob && !knobStateHistory) {
         timer_knobPress = millis();
         isKnobBeingLongPressed = false;
@@ -651,14 +652,14 @@ void loop() {
     }
     // ------------------------------------------
 
-for (int r = 0; r < 3; r++) {
+    for (int r = 0; r < 3; r++) {
         pinMode(pins_matrix_rows[r], OUTPUT); 
         digitalWrite(pins_matrix_rows[r], LOW); 
         
         for (int c = 0; c < 3; c++) {
             bool reading = (digitalRead(pins_matrix_cols[c]) == LOW); 
             
-            // Lógica de debounce restaurada para evitar múltiplos acionamentos
+            // Debounce logic restored to prevent multiple triggers
             if (reading != state_lastKeys[r][c] && (millis() - time_lastDebounce[r][c] > DEBOUNCE_MS)) {
                 
                 time_lastDebounce[r][c] = millis(); 
@@ -666,7 +667,7 @@ for (int r = 0; r < 3; r++) {
                 
                 if (reading) {
                     
-                    // Aciona o feedback tátil imediatamente para simular o clique físico
+                    // Trigger haptic feedback immediately to simulate physical click
                     if (!knob) {
                         triggerHaptic(1);
                     }
@@ -676,15 +677,15 @@ for (int r = 0; r < 3; r++) {
                     
                     if (knob) isComboModeActive = true;
 
-                    // Executa e avalia o sucesso
+                    // Execute and evaluate success
                     if (executarArquivoDucky(path)) {
                         tone(PIN_BUZZER, 600, 50);
                         tone(PIN_BUZZER, 400, 80); 
-                        // Se for combo via knob, sobrepõe com a vibração dupla
+                        // If it's a combo via knob, overlay with double vibration
                         if (knob) triggerHaptic(3); 
                     } else {
                         Keyboard.press(k);
-                        // Vibração de erro apenas se for pelo knob, pois a tecla normal já vibrou
+                        // Error vibration only if via knob, since normal key already vibrated
                         if (knob) triggerHaptic(4); 
                     }
                     timer_ledFlash = millis() + 120; 
@@ -696,7 +697,7 @@ for (int r = 0; r < 3; r++) {
         pinMode(pins_matrix_rows[r], INPUT); 
     }
 
-long p = encoder.getCount();
+    long p = encoder.getCount();
     if (p != lastEncoderValue) {
         if (isMenuMode) {
             if (p > lastEncoderValue) menuSelectedIndex++;
@@ -709,14 +710,14 @@ long p = encoder.getCount();
             if (menuSelectedIndex >= menuScrollOffset + 5) menuScrollOffset = menuSelectedIndex - 4;
 
             menuTimeoutTimer = millis(); 
-            triggerHaptic(5); // <-- ALTERADO PARA 5
+            triggerHaptic(5); // <-- CHANGED TO 5
         } else {
             vuBarsLevel = 10; 
             if (p > lastEncoderValue) ConsumerControl.press(CONSUMER_CONTROL_VOLUME_INCREMENT);
             else ConsumerControl.press(CONSUMER_CONTROL_VOLUME_DECREMENT);
             ConsumerControl.release(); 
             timer_volFlash = millis() + 200;
-            triggerHaptic(5); // <-- ALTERADO PARA 5
+            triggerHaptic(5); // <-- CHANGED TO 5
         }
         lastEncoderValue = p; 
     }
@@ -731,30 +732,31 @@ long p = encoder.getCount();
         if (ignoreNextKnobRelease) {
             ignoreNextKnobRelease = false;
         }
-else if (isMenuMode) {
+        else if (isMenuMode) {
             if (menuCount > 0) {
                 String path = "/" + menuItems[menuSelectedIndex];
                 
-                // Executa a automação e avalia o sucesso
+                // Execute automation and evaluate success
                 if (executarArquivoDucky(path)) {
                     
-                    // Restaura o feedback sonoro
+                    // Restore sound feedback
                     tone(PIN_BUZZER, 600, 50);
                     tone(PIN_BUZZER, 400, 80);
                     
-                    // Inteligência tátil: vibração dupla para combo, simples para macro
+                    // Haptic intelligence: double vibration for combo, simple for macro
                     if (path.indexOf("combo_") != -1) {
                         triggerHaptic(3);
                     } else {
                         triggerHaptic(1);
                     }
                 } else {
-                    // Feedback de falha (arquivo vazio ou corrompido)
+                    // Failure feedback (empty or corrupted file)
                     triggerHaptic(4); 
                 }
             }
             isMenuMode = false; 
-        }        else if (!isComboModeActive && !isKnobBeingLongPressed) {
+        }
+        else if (!isComboModeActive && !isKnobBeingLongPressed) {
             static unsigned long lastM = 0;
             if (millis() - lastM > 400) { 
                 ConsumerControl.press(CONSUMER_CONTROL_MUTE); 

@@ -1,90 +1,90 @@
 # ⌨️ MynouPAD S3 — Master Console v6.0
 
-**MynouPAD** é um macro pad inteligente e console de automação de alto desempenho desenvolvido para a plataforma **ESP32-S3**. Combinando emulação de teclado e mídia USB nativa, uma partição interna dedicada para scripts de automação, uma dashboard web de administração e integração direta com o **Home Assistant**, ele eleva a produtividade e o controle de infraestrutura ao próximo nível.
+**MynouPAD** is an intelligent, high-performance macro pad and automation console developed for the **ESP32-S3** platform. Combining native USB keyboard and media emulation, a dedicated internal flash partition for automation scripts, a web administration dashboard, and direct **Home Assistant** integration, it elevates productivity and infrastructure control to the next level.
 
 ---
 
-## 🚀 Principais Recursos
+## 🚀 Key Features
 
-- **⚡ Hardware Poderoso**: Baseado no ESP32-S3 Dual-Core @ 240MHz com 16MB de memória Flash.
-- **📁 Armazenamento Dedicado (FFat)**: Partição de 9.9MB para guardar arquivos de macro de forma independente.
-- **🖥️ Interface Gráfica OLED**: Display SSD1306 OLED (128x64) via I2C mostrando o status do volume, status do Mute, ações disparadas e menu navegável.
-- **🔄 Rotary Encoder Multifuncional**: Controle de volume de alta precisão com suporte a clique curto (Mute), clique duplo (Combo) e clique longo (abrir menu de macros no OLED).
-- **🎛️ Matriz de Teclas 3x3**: Mapeamento físico corrigido de 9 teclas com suporte a macros normais e combos avançados em conjunto com o Knob.
-- **🌐 Web Admin Console**: Dashboard industrial moderna integrada para mapear botões, gerenciar arquivos na memória flash e criar/editar automações em **DuckyScript** direto do navegador.
-- **🏡 Automação Home Assistant**: Comando customizado `HA_TOGGLE` para disparar interruptores, luzes e cenas diretamente na rede local sem depender do PC.
-- **🔌 Emulação USB Nativa**: Usa a pilha TinyUSB para se comportar como um dispositivo USB HID (teclado/mídia) e porta serial CDC simultaneamente.
-- **💓 Feedback Haptic (Vibração)**: Gerenciador de vibração com 5 padrões de feedbacks táteis distintos para ações (clique normal, mute, erro de macro, rotação do knob, etc.).
-- **🌈 Status RGB (NeoPixel)**: Feedback visual em tempo real para indicar o estado da ponte com o Python, mutado/desmutado e carregamento de macros.
+- **⚡ Powerful Hardware**: Based on the ESP32-S3 Dual-Core @ 240MHz with 16MB of Flash memory.
+- **📁 Dedicated Storage (FFat)**: Dedicated 9.9MB partition to store macro script files independently.
+- **🖥️ OLED Graphical Interface**: SSD1306 OLED display (128x64) via I2C showing volume status, mute status, triggered actions, and a navigable menu.
+- **🔄 Multifunctional Rotary Encoder**: High-precision volume control supporting short clicks (Mute), double clicks (Combo), and long clicks (opening the macro menu on the OLED).
+- **🎛️ 3x3 Key Matrix**: Physcial mapping-corrected 9-key matrix with support for normal macros and advanced combos when used together with the encoder button.
+- **🌐 Web Admin Console**: Integrated modern industrial dashboard to map buttons, manage flash storage files, and write/edit automation scripts in **DuckyScript** directly from your browser.
+- **🏡 Home Assistant Automation**: Custom `HA_TOGGLE` command to trigger smart home switches, lights, and scenes directly on the local network without relying on a PC.
+- **🔌 Native USB Emulation**: Uses the TinyUSB stack to act as a native USB HID device (keyboard/media keys) and serial CDC port simultaneously.
+- **💓 Haptic Feedback (Vibration)**: Vibration manager with 5 distinct haptic patterns for physical events (normal click, mute, macro error, knob rotation, etc.).
+- **🌈 NeoPixel RGB Status**: Real-time visual feedback indicating Python bridge connection status, mute status, and macro execution state.
 
 ---
 
-## 🛠️ Especificações de Pinagem (Hardware)
+## 🛠️ Pinout Specifications (Hardware)
 
-| Componente | Pinos ESP32-S3 | Função |
+| Component | ESP32-S3 Pin | Function |
 | :--- | :--- | :--- |
-| **Rotary Encoder CLK/DT** | `GPIO 1` & `GPIO 2` | Leitura de rotação do knob |
-| **Rotary Encoder SW (Botão)**| `GPIO 4` | Cliques curto, longo e modo combo |
-| **Buzzer** | `GPIO 10` | Avisos sonoros de boot e ações |
-| **Motor de Vibração (Haptic)** | `GPIO 18` | Feedback tátil |
-| **NeoPixel RGB LED** | `GPIO 48` | Status visual colorido |
-| **Matriz Linhas (Rows)** | `GPIO 7`, `6`, `5` | Varredura física das teclas |
-| **Matriz Colunas (Cols)** | `GPIO 15`, `16`, `17` | Detecção física das teclas |
-| **I2C SDA / SCL** | `GPIO 8` / `GPIO 9` | Comunicação com o display OLED |
+| **Rotary Encoder CLK/DT** | `GPIO 1` & `GPIO 2` | Knob rotation reading |
+| **Rotary Encoder SW (Button)**| `GPIO 4` | Short/long clicks and combo mode modifier |
+| **Buzzer** | `GPIO 10` | Boot sounds and action audio cues |
+| **Vibration Motor (Haptic)** | `GPIO 18` | Haptic feedback |
+| **NeoPixel RGB LED** | `GPIO 48` | Colorful visual status |
+| **Matrix Rows** | `GPIO 7`, `6`, `5` | Physical key scanning rows |
+| **Matrix Columns** | `GPIO 15`, `16`, `17` | Physical key scanning columns |
+| **I2C SDA / SCL** | `GPIO 8` / `GPIO 9` | OLED display connection |
 
 ---
 
-## 📁 Estrutura de Arquivos
+## 📁 File Structure
 
-* `MynouPAD v1.txt`: Código-fonte principal do firmware (arquivo principal C++/Arduino).
-* `secrets.h`: Contém credenciais sigilosas (Wi-Fi e Tokens). **(Ignorado pelo Git por segurança)**.
-* `secrets.h.example`: Modelo de configuração pública.
-* `.gitignore`: Configuração para ignorar arquivos de build, IDEs e credenciais.
+* `MynouPAD.cpp`: Main firmware source code (C++/Arduino).
+* `secrets.h`: Contains sensitive credentials (Wi-Fi and API tokens). **(Ignored by Git for security)**.
+* `secrets.h.example`: Template for public configuration.
+* `.gitignore`: Configured to exclude build folders, IDE directories, and `secrets.h`.
 
 ---
 
-## ⚙️ Como Configurar e Compilar
+## ⚙️ Setup and Compilation
 
-### 1. Criar o Arquivo de Credenciais
-Copie o arquivo `src/secrets.h.example` para `src/secrets.h` e insira suas credenciais:
+### 1. Create the Credentials File
+Copy the `src/secrets.h.example` file to `src/secrets.h` and fill in your credentials:
 
 ```cpp
 // src/secrets.h
 #ifndef SECRETS_H
 #define SECRETS_H
 
-#define SECRET_WIFI_SSID     "NOME_DA_SUA_REDE"
-#define SECRET_WIFI_PASSWORD "SENHA_DA_SUA_REDE"
-#define SECRET_HA_TOKEN      "Bearer SEU_TOKEN_DO_HOME_ASSISTANT"
+#define SECRET_WIFI_SSID     "YOUR_WIFI_SSID"
+#define SECRET_WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+#define SECRET_HA_TOKEN      "Bearer YOUR_HOME_ASSISTANT_TOKEN"
 
 #endif
 ```
 
-### 2. Configurações da Arduino IDE (Se aplicável)
-* **Placa**: ESP32S3 Dev Module
+### 2. Arduino IDE Settings (If applicable)
+* **Board**: ESP32S3 Dev Module
 * **USB CDC On Boot**: Enabled
 * **USB Mode**: TinyUSB
 * **Partition Scheme**: 16M Flash (3MB APP / 9.9MB FATFS)
 
-### 3. Configurações do PlatformIO
-O arquivo `platformio.ini` deve estar configurado para utilizar a pilha USB adequada e a partição customizada de 16MB.
+### 3. PlatformIO Settings
+The `platformio.ini` file should be configured to use the appropriate USB stack and the 16MB custom partition.
 
 ---
 
-## ✍️ Sintaxe DuckyScript Suportada
+## ✍️ Supported DuckyScript Syntax
 
-A engine nativa do MynouPAD suporta os seguintes comandos nos scripts armazenados no Flash:
+The native MynouPAD engine supports the following commands in the scripts stored in Flash:
 
-* `STRING <texto>`: Digita o texto especificado.
-* `DELAY <milisegundos>`: Pausa a execução pelo tempo definido.
-* `ENTER`, `TAB`, `ESC`: Pressiona as respectivas teclas especiais.
-* `GUI` ou `GUI <tecla>`: Pressiona a tecla Windows/Command (sozinha ou combinada com outra).
-* `CTRL <tecla>` ou `CONTROL <tecla>`: Pressiona a tecla Control combinada com outra.
-* `HA_TOGGLE <entity_id>`: **(Customizado)** Alterna o estado de um dispositivo no Home Assistant diretamente via API local. Exemplo:
+* `STRING <text>`: Types the specified text.
+* `DELAY <milliseconds>`: Pauses execution for the defined time.
+* `ENTER`, `TAB`, `ESC`: Presses the respective special keys.
+* `GUI` or `GUI <key>`: Presses the Windows/Command key (alone or combined with another).
+* `CTRL <key>` or `CONTROL <key>`: Presses the Control key combined with another.
+* `HA_TOGGLE <entity_id>`: **(Custom)** Toggles the state of a device in Home Assistant directly via local API. Example:
   ```text
-  HA_TOGGLE light.luminaria_escritorio
+  HA_TOGGLE light.office_desk_lamp
   ```
 
 ---
 
-Desenvolvido com ☕ e 💻 por [Mynoush](https://github.com/Mynoush).
+Developed with ☕ and 💻 by [Mynoush](https://github.com/Mynoush).
