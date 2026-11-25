@@ -2,6 +2,10 @@
 
 All notable changes to **MynouPAD S3** are documented in this file.
 
+## [7.2.0] - 2026-11-25
+### Changed
+- **Frosted Glass Web Theme**: Matched MynouPAD Studio's visual language to Home Assistant's `Frosted Glass` dark theme (`backdrop-filter: blur(10px) saturate(1.25)`, inset glass edge highlights, translucent keycaps, `#7AA2BE` primary palette, and dark frosted wallpaper with offline gradient fallback).
+
 ## [7.1.0] - 2026-11-25
 ### Added
 - **Official Mascot Identity**: Converted the OLED boot `drawFace` pixel-art mascot into a crisp SVG emblem (`assets/mascot.svg` and firmware `/mascot.svg` endpoint).

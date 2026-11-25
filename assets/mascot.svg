@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="27.5 -0.5 72 72" width="128" height="128" role="img" aria-label="MynouPAD Mascot">
-  <rect x="28.5" y="0.5" width="70" height="70" rx="16" fill="#090b10" stroke="#232b3e" stroke-width="2"/>
-  <rect x="41" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/>
-  <rect x="74" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/>
-  <rect x="52" y="48" width="25" height="4" fill="#e6ecf5"/>
-  <polygon points="43,40 47,40 56,52 52,52" fill="#e6ecf5"/>
-  <polygon points="81,40 85,40 76,52 72,52" fill="#e6ecf5"/>
+  <rect x="28.5" y="0.5" width="70" height="70" rx="18" fill="#0c141e" fill-opacity="0.78" stroke="#eaecee" stroke-opacity="0.28" stroke-width="1.5"/>
+  <rect x="41" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/>
+  <rect x="74" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/>
+  <rect x="52" y="48" width="25" height="4" fill="#eaecee"/>
+  <polygon points="43,40 47,40 56,52 52,52" fill="#eaecee"/>
+  <polygon points="81,40 85,40 76,52 72,52" fill="#eaecee"/>
 </svg>

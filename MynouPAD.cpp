@@ -49,7 +49,7 @@
 #define PIN_BUZZER   10
 #define PIN_MOTOR    18
 
-#define FIRMWARE_VERSION "7.1"
+#define FIRMWARE_VERSION "7.2"
 #ifndef SECRET_HA_URL
 #define SECRET_HA_URL    "http://homeassistant.local:8123"
 #endif
@@ -133,10 +133,10 @@ const int KNOB_LONG_PRESS_MS   = 600;
 // --------------------------------------------------------------------------------------
 // Official Mascot SVG (pixel-perfect match of drawFace() OLED boot animation)
 // --------------------------------------------------------------------------------------
-const char mascot_svg[] PROGMEM = R"rawliteral(<svg xmlns="http://www.w3.org/2000/svg" viewBox="27.5 -0.5 72 72" width="128" height="128"><rect x="28.5" y="0.5" width="70" height="70" rx="16" fill="#090b10" stroke="#232b3e" stroke-width="2"/><rect x="41" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/><rect x="74" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/><rect x="52" y="48" width="25" height="4" fill="#e6ecf5"/><polygon points="43,40 47,40 56,52 52,52" fill="#e6ecf5"/><polygon points="81,40 85,40 76,52 72,52" fill="#e6ecf5"/></svg>)rawliteral";
+const char mascot_svg[] PROGMEM = R"rawliteral(<svg xmlns="http://www.w3.org/2000/svg" viewBox="27.5 -0.5 72 72" width="128" height="128"><rect x="28.5" y="0.5" width="70" height="70" rx="18" fill="#0c141e" fill-opacity="0.78" stroke="#eaecee" stroke-opacity="0.28" stroke-width="1.5"/><rect x="41" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/><rect x="74" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/><rect x="52" y="48" width="25" height="4" fill="#eaecee"/><polygon points="43,40 47,40 56,52 52,52" fill="#eaecee"/><polygon points="81,40 85,40 76,52 72,52" fill="#eaecee"/></svg>)rawliteral";
 
 // --------------------------------------------------------------------------------------
-// MynouPAD Studio v7.1 Web UI (Served directly without template escaping issues)
+// MynouPAD Studio v7.2 Web UI — Home Assistant Frosted Glass Dark Theme
 // --------------------------------------------------------------------------------------
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE html>
@@ -144,75 +144,143 @@ const char index_html[] PROGMEM = R"rawliteral(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MynouPAD Studio v7.1</title>
+<title>MynouPAD Studio v7.2</title>
 <link rel="icon" type="image/svg+xml" href="/mascot.svg">
 <style>
 :root{
-  --bg:#090b10;--panel:#11151f;--panel-2:#171d2b;--border:#232b3e;
-  --text:#e6ecf5;--muted:#8795b0;--accent:#38bdf8;--accent-2:#818cf8;
-  --ok:#34d399;--warn:#fbbf24;--err:#f87171;--combo:#fb923c;
-  --radius:14px;--mono:'JetBrains Mono','Cascadia Code','Consolas',monospace;
+  --bg-fallback:radial-gradient(1100px 620px at 14% 8%,rgba(122,162,190,.24),transparent 60%),radial-gradient(900px 540px at 88% 12%,rgba(41,66,84,.38),transparent 62%),linear-gradient(155deg,#02060b 0%,#0b1520 52%,#040a11 100%);
+  --glass-bg:rgba(2,6,11,.18);
+  --glass-ctrl:rgba(12,20,30,.38);
+  --glass-ctrl-hover:rgba(12,20,30,.54);
+  --glass-blur:blur(10px) saturate(1.25);
+  --bar-blur:blur(20px) saturate(1.3);
+  --glass-border:0.5px solid rgba(234,235,238,.22);
+  --glass-inset:3px 3px 0.5px -3.5px rgba(255,255,255,.30) inset,-2px -2px 0.5px -2px rgba(255,255,255,.20) inset,0 0 8px 1px rgba(255,255,255,.06) inset,0 0 2px 0 rgba(0,0,0,.18);
+  --glass-shadow:var(--glass-inset),0 14px 38px rgba(0,0,0,.34),0 2px 10px rgba(0,0,0,.24);
+  --badge-shadow:var(--glass-inset),0 3px 10px rgba(0,0,0,.22);
+  --text:rgba(234,235,238,.98);--muted:rgba(234,235,238,.72);
+  --accent:rgb(122,162,190);--accent-light:rgb(172,196,212);
+  --ok:rgb(118,214,152);--warn:rgb(255,219,117);--err:rgb(234,114,135);--combo:#ffab40;
+  --radius:18px;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:radial-gradient(1200px 600px at 15% -10%,rgba(56,189,248,.10),transparent),radial-gradient(900px 500px at 90% 0%,rgba(129,140,248,.10),transparent),var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+body{
+  background:url('https://cdn.jsdelivr.net/gh/wessamlauf/homeassistant-frosted-glass-themes@refs/heads/main/themes/frosted-glass-dark-background.jpg') center/cover no-repeat fixed,var(--bg-fallback);
+  background-color:#02060b;color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;padding:24px
+}
 .shell{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px 22px}
-.brand{display:flex;align-items:center;gap:12px}
-.mascot-logo{width:44px;height:44px;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(56,189,248,.22))}
+.topbar{
+  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;
+  background:rgba(2,6,11,.14);backdrop-filter:var(--bar-blur);-webkit-backdrop-filter:var(--bar-blur);
+  border:var(--glass-border);box-shadow:var(--glass-shadow);border-radius:var(--radius);padding:16px 22px
+}
+.brand{display:flex;align-items:center;gap:13px}
+.mascot-logo{width:46px;height:46px;flex-shrink:0;filter:drop-shadow(0 6px 14px rgba(0,0,0,.45))}
 .mascot-logo .eye-l{transform-box:fill-box;transform-origin:center;animation:blinkEye 4.2s infinite}
 @keyframes blinkEye{0%,45%,51%,100%{transform:scaleY(1)}48%{transform:scaleY(.16)}}
-.brand h1{font-size:18px;font-weight:700;letter-spacing:.4px}
+.brand h1{font-size:19px;font-weight:500;letter-spacing:.3px}
 .brand small{display:block;color:var(--muted);font-size:12px}
 .pills{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:7px;background:var(--panel-2);border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--text)}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border:var(--glass-border);box-shadow:var(--badge-shadow);border-radius:999px;padding:7px 13px;font-size:12px;color:var(--text)
+}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn)}
-.ha-link{text-decoration:none;color:#08101d;background:linear-gradient(135deg,var(--accent),#0ea5e9);font-weight:700;border:none}
+.ha-link{text-decoration:none;color:var(--text);background:rgba(122,162,190,.28);font-weight:600;transition:.15s}
+.ha-link:hover{background:rgba(122,162,190,.42)}
 .grid-main{display:grid;grid-template-columns:420px 1fr;gap:18px}
 @media(max-width:960px){.grid-main{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:16px}
-.card-title{display:flex;justify-content:space-between;align-items:center;font-size:13px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);font-weight:700}
-.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--bg);padding:5px;border-radius:11px;border:1px solid var(--border)}
-.mode-btn{border:none;background:transparent;color:var(--muted);padding:9px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;text-transform:uppercase;letter-spacing:.7px;transition:.15s}
-.mode-btn.active-macro{background:rgba(56,189,248,.16);color:var(--accent);border:1px solid rgba(56,189,248,.35)}
-.mode-btn.active-combo{background:rgba(251,146,60,.16);color:var(--combo);border:1px solid rgba(251,146,60,.35)}
+.card{
+  background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border:var(--glass-border);box-shadow:var(--glass-shadow);border-radius:var(--radius);
+  padding:20px;display:flex;flex-direction:column;gap:16px
+}
+.card-title{display:flex;justify-content:space-between;align-items:center;font-size:12px;text-transform:uppercase;letter-spacing:1.3px;color:var(--muted);font-weight:600}
+.mode-switch{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--glass-ctrl);
+  padding:5px;border-radius:14px;border:var(--glass-border);box-shadow:var(--glass-inset)
+}
+.mode-btn{border:none;background:transparent;color:var(--muted);padding:9px;border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;text-transform:uppercase;letter-spacing:.7px;transition:.15s}
+.mode-btn.active-macro{background:rgba(122,162,190,.26);color:var(--text);box-shadow:var(--badge-shadow);border:var(--glass-border)}
+.mode-btn.active-combo{background:rgba(255,171,64,.22);color:var(--combo);box-shadow:var(--badge-shadow);border:0.5px solid rgba(255,171,64,.42)}
 .pad-wrap{display:flex;flex-direction:column;gap:12px}
-.knob-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
-.knob-dial{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2b364d,#121722);border:2px solid #33415c;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0}
+.knob-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:rgba(255,255,255,.06);border:var(--glass-border);box-shadow:var(--glass-inset);
+  border-radius:14px;padding:12px 14px
+}
+.knob-dial{
+  width:44px;height:44px;border-radius:50%;background:rgba(12,20,30,.55);
+  border:var(--glass-border);box-shadow:var(--badge-shadow);
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--accent-light);flex-shrink:0
+}
 .media-btns{display:flex;gap:6px}
-.mini-btn{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
-.mini-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mini-btn{
+  background:rgba(255,255,255,.08);border:var(--glass-border);box-shadow:var(--glass-inset);
+  color:var(--text);padding:7px 10px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s
+}
+.mini-btn:hover{background:rgba(122,162,190,.24);border-color:rgba(172,196,212,.45)}
 .matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.keycap{position:relative;background:linear-gradient(180deg,#1a2130,#121722);border:1px solid var(--border);border-radius:12px;padding:12px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;text-align:left;color:var(--text);transition:.15s}
-.keycap:hover{border-color:var(--accent);transform:translateY(-1px)}
-.keycap.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(56,189,248,.22),inset 0 0 18px rgba(56,189,248,.08)}
-.keycap.combo-mode.selected{border-color:var(--combo);box-shadow:0 0 0 2px rgba(251,146,60,.22),inset 0 0 18px rgba(251,146,60,.08)}
-.keycap.has-file::after{content:'';position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--ok)}
-.keycap.combo-mode.has-file::after{background:var(--combo)}
-.key-num{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700}
+.keycap{
+  position:relative;background:rgba(255,255,255,.07);border:var(--glass-border);box-shadow:var(--badge-shadow);
+  border-radius:14px;padding:12px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:space-between;
+  cursor:pointer;text-align:left;color:var(--text);transition:.15s
+}
+.keycap:hover{background:rgba(255,255,255,.12);transform:translateY(-1px)}
+.keycap.selected{background:rgba(122,162,190,.24);border-color:rgba(172,196,212,.58);box-shadow:var(--glass-inset),0 0 18px rgba(122,162,190,.26)}
+.keycap.combo-mode.selected{background:rgba(255,171,64,.18);border-color:rgba(255,171,64,.55);box-shadow:var(--glass-inset),0 0 18px rgba(255,171,64,.22)}
+.keycap.has-file::after{content:'';position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.keycap.combo-mode.has-file::after{background:var(--combo);box-shadow:0 0 6px var(--combo)}
+.key-num{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700}
 .key-lbl{font-size:12px;font-weight:600;line-height:1.25;word-break:break-word;margin-top:4px}
 .key-sz{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px}
 .field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:12px;color:var(--muted);font-weight:600}
-.input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 13px;font-size:14px;outline:none;width:100%}
+.field label{font-size:12px;color:var(--muted);font-weight:500}
+.input{
+  background:var(--glass-ctrl);border:var(--glass-border);box-shadow:var(--glass-inset);
+  color:var(--text);border-radius:12px;padding:11px 13px;font-size:14px;outline:none;width:100%;transition:.15s
+}
+.input:hover{background:var(--glass-ctrl-hover)}
 .input:focus,textarea:focus{border-color:var(--accent)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:var(--panel-2);border:1px solid var(--border);color:var(--muted);padding:5px 9px;border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer}
-.chip:hover{color:var(--accent);border-color:var(--accent)}
-textarea.editor{width:100%;min-height:240px;background:#06080c;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:14px;color:#7dd3fc;font-family:var(--mono);font-size:13.5px;line-height:1.6;resize:vertical;outline:none}
+.chip{
+  background:rgba(255,255,255,.08);border:var(--glass-border);box-shadow:var(--glass-inset);
+  color:var(--muted);padding:5px 10px;border-radius:999px;font-family:var(--mono);font-size:11px;cursor:pointer;transition:.15s
+}
+.chip:hover{color:var(--text);background:rgba(122,162,190,.24)}
+textarea.editor{
+  width:100%;min-height:240px;background:rgba(2,6,11,.56);border:var(--glass-border);
+  border-left:3px solid var(--accent);box-shadow:var(--glass-inset);border-radius:12px;
+  padding:14px;color:rgb(164,209,255);font-family:var(--mono);font-size:13.5px;line-height:1.6;resize:vertical;outline:none
+}
 .actions{display:flex;flex-wrap:wrap;gap:10px}
-.btn{border:none;border-radius:10px;padding:12px 18px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.15s}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#0284c7);color:#04111d;flex:1;justify-content:center}
-.btn-run{background:rgba(52,211,153,.15);color:var(--ok);border:1px solid rgba(52,211,153,.35)}
-.btn-del{background:rgba(248,113,113,.12);color:var(--err);border:1px solid rgba(248,113,113,.3)}
-.btn:hover{filter:brightness(1.1)}
+.btn{
+  border:var(--glass-border);box-shadow:var(--badge-shadow);border-radius:12px;padding:12px 18px;
+  font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.15s
+}
+.btn-primary{background:rgba(122,162,190,.34);color:var(--text);flex:1;justify-content:center}
+.btn-run{background:rgba(118,214,152,.18);color:var(--ok);border-color:rgba(118,214,152,.35)}
+.btn-del{background:rgba(234,114,135,.16);color:var(--err);border-color:rgba(234,114,135,.32)}
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
 .statusbar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:800px){.statusbar{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 15px}
+.stat{
+  background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border:var(--glass-border);box-shadow:var(--glass-shadow);border-radius:16px;padding:13px 16px
+}
 .stat small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.7px}
-.stat strong{display:block;margin-top:4px;font-size:15px;font-family:var(--mono)}
-.toast{position:fixed;bottom:20px;right:20px;background:var(--panel-2);border:1px solid var(--accent);color:var(--text);padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.stat strong{display:block;margin-top:4px;font-size:15px;font-family:var(--mono);font-weight:600}
+.toast{
+  position:fixed;bottom:20px;right:20px;background:rgba(2,6,11,.86);
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);
+  border:var(--glass-border);box-shadow:var(--glass-shadow);color:var(--text);
+  padding:11px 16px;border-radius:14px;font-size:13px;font-weight:600;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none
+}
 .toast.show{opacity:1;transform:translateY(0)}
 </style>
 </head>
@@ -221,16 +289,16 @@ textarea.editor{width:100%;min-height:240px;background:#06080c;border:1px solid 
   <header class="topbar">
     <div class="brand">
       <svg class="mascot-logo" viewBox="27.5 -0.5 72 72" aria-label="MynouPAD Mascot">
-        <rect x="28.5" y="0.5" width="70" height="70" rx="16" fill="#090b10" stroke="#232b3e" stroke-width="2"/>
-        <rect class="eye-l" x="41" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/>
-        <rect x="74" y="19" width="12" height="12" rx="1.5" fill="#38bdf8"/>
-        <rect x="52" y="48" width="25" height="4" fill="#e6ecf5"/>
-        <polygon points="43,40 47,40 56,52 52,52" fill="#e6ecf5"/>
-        <polygon points="81,40 85,40 76,52 72,52" fill="#e6ecf5"/>
+        <rect x="28.5" y="0.5" width="70" height="70" rx="18" fill="#0c141e" fill-opacity="0.78" stroke="#eaecee" stroke-opacity="0.28" stroke-width="1.5"/>
+        <rect class="eye-l" x="41" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/>
+        <rect x="74" y="19" width="12" height="12" rx="1.5" fill="#7aa2be"/>
+        <rect x="52" y="48" width="25" height="4" fill="#eaecee"/>
+        <polygon points="43,40 47,40 56,52 52,52" fill="#eaecee"/>
+        <polygon points="81,40 85,40 76,52 72,52" fill="#eaecee"/>
       </svg>
       <div>
-        <h1>MynouPAD Studio <span style="color:var(--accent)">v7.1</span></h1>
-        <small id="subline">ESP32-S3 TinyUSB HID + Home Assistant Console</small>
+        <h1>MynouPAD Studio <span style="color:var(--accent-light)">v7.2</span></h1>
+        <small id="subline">ESP32-S3 TinyUSB HID + Home Assistant Frosted Glass Console</small>
       </div>
     </div>
     <div class="pills">

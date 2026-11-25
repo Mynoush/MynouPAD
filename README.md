@@ -2,7 +2,7 @@
   <img src="assets/mascot.svg" alt="MynouPAD Mascot" width="110" />
 </p>
 
-<h1 align="center">MynouPAD S3 — Master Console v7.1</h1>
+<h1 align="center">MynouPAD S3 — Master Console v7.2</h1>
 
 <p align="center">
   ESP32-S3 programmable macro pad with native TinyUSB HID + CDC, FFat DuckyScript storage, animated OLED mascot identity, modern web studio, and bidirectional Home Assistant integration.
