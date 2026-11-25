@@ -1,4 +1,4 @@
-# Secrets file (contains Wi-Fi password and HA token)
+# Secrets file (contains Wi-Fi credentials, HA URL, and HA token)
 secrets.h
 
 # Arduino IDE temporary build files and directories
@@ -12,3 +12,12 @@ bin/
 .piolibdeps/
 .clang_complete
 .gcc-flags.json
+
+# Graphify local knowledge graph outputs
+graphify-out/
+
+# Personal / unrelated local files
+*.pdf
+resume.html
+generate_pdf.py
+*.bak_*
