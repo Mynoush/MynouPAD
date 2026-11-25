@@ -2,6 +2,11 @@
 
 All notable changes to **MynouPAD S3** are documented in this file.
 
+## [7.2.1] - 2026-11-25
+### Fixed
+- **Global Mascot Icons & Cache Busting**: Added `/favicon.ico` SVG route, `Cache-Control: no-cache, must-revalidate` headers, `?v=7.2` favicon query strings, and an inline `data:image/svg+xml` `shortcut icon` so browsers always render the Frosted Glass `mascot.svg`.
+- **Home Assistant Entity Avatar**: Updated `sensor.mynoupad_status` telemetry to embed the Frosted Glass `mascot.svg` directly as an inline `data:image/svg+xml` `entity_picture` (removing the generic `mdi:keyboard-variant` icon override).
+
 ## [7.2.0] - 2026-11-25
 ### Changed
 - **Frosted Glass Web Theme**: Matched MynouPAD Studio's visual language to Home Assistant's `Frosted Glass` dark theme (`backdrop-filter: blur(10px) saturate(1.25)`, inset glass edge highlights, translucent keycaps, `#7AA2BE` primary palette, and dark frosted wallpaper with offline gradient fallback).

@@ -145,7 +145,9 @@ const char index_html[] PROGMEM = R"rawliteral(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MynouPAD Studio v7.2</title>
-<link rel="icon" type="image/svg+xml" href="/mascot.svg">
+<link rel="icon" type="image/svg+xml" href="/mascot.svg?v=7.2">
+<link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='27.5 -0.5 72 72'%3E%3Crect x='28.5' y='0.5' width='70' height='70' rx='18' fill='%230c141e' fill-opacity='0.78' stroke='%23eaecee' stroke-opacity='0.28' stroke-width='1.5'/%3E%3Crect x='41' y='19' width='12' height='12' rx='1.5' fill='%237aa2be'/%3E%3Crect x='74' y='19' width='12' height='12' rx='1.5' fill='%237aa2be'/%3E%3Crect x='52' y='48' width='25' height='4' fill='%23eaecee'/%3E%3Cpolygon points='43,40 47,40 56,52 52,52' fill='%23eaecee'/%3E%3Cpolygon points='81,40 85,40 76,52 72,52' fill='%23eaecee'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="/mascot.svg?v=7.2">
 <style>
 :root{
   --bg-fallback:radial-gradient(1100px 620px at 14% 8%,rgba(122,162,190,.24),transparent 60%),radial-gradient(900px 540px at 88% 12%,rgba(41,66,84,.38),transparent 62%),linear-gradient(155deg,#02060b 0%,#0b1520 52%,#040a11 100%);
@@ -722,8 +724,7 @@ void syncHomeAssistantStatus() {
     doc["state"] = lastFriendlyMacro;
     JsonObject attrs = doc["attributes"].to<JsonObject>();
     attrs["friendly_name"]  = "MynouPAD S3 Console";
-    attrs["icon"]           = "mdi:keyboard-variant";
-    attrs["entity_picture"] = "http://" + WiFi.localIP().toString() + "/mascot.svg";
+    attrs["entity_picture"] = "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='27.5 -0.5 72 72'%3E%3Crect x='28.5' y='0.5' width='70' height='70' rx='18' fill='%230c141e' fill-opacity='0.78' stroke='%23eaecee' stroke-opacity='0.28' stroke-width='1.5'/%3E%3Crect x='41' y='19' width='12' height='12' rx='1.5' fill='%237aa2be'/%3E%3Crect x='74' y='19' width='12' height='12' rx='1.5' fill='%237aa2be'/%3E%3Crect x='52' y='48' width='25' height='4' fill='%23eaecee'/%3E%3Cpolygon points='43,40 47,40 56,52 52,52' fill='%23eaecee'/%3E%3Cpolygon points='81,40 85,40 76,52 72,52' fill='%23eaecee'/%3E%3C/svg%3E";
     attrs["firmware"]       = FIRMWARE_VERSION;
     attrs["ip"]             = WiFi.localIP().toString();
     attrs["rssi"]           = WiFi.RSSI();
@@ -988,11 +989,13 @@ void setup() {
             r->send(200, "text/html", index_html);
         });
 
-        server.on("/mascot.svg", HTTP_GET, [](AsyncWebServerRequest *r) {
+        auto sendMascot = [](AsyncWebServerRequest *r) {
             AsyncWebServerResponse *res = r->beginResponse(200, "image/svg+xml", mascot_svg);
-            res->addHeader("Cache-Control", "public, max-age=86400");
+            res->addHeader("Cache-Control", "no-cache, must-revalidate");
             r->send(res);
-        });
+        };
+        server.on("/mascot.svg", HTTP_GET, sendMascot);
+        server.on("/favicon.ico", HTTP_GET, sendMascot);
 
         server.on("/api/status", HTTP_GET, [](AsyncWebServerRequest *r) {
             r->send(200, "application/json", buildStatusJson());
